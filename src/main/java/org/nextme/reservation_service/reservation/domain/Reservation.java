@@ -43,14 +43,15 @@ public class Reservation extends JpaAudit {
      * 예약을 생성하고 초기 상태(PENDING_PAYMENT)를 설정합니다.
      * 결제 및 확정 관련 필드(paymentId, roomId)는 제외합니다.
      */
-    @Builder
     public static Reservation create(UUID userId, UUID advisorId, UUID productId, String sagaId) {
-        return Reservation.builder()
-                .userId(userId)
-                .advisorId(advisorId)
-                .productId(productId)
-                .sagaId(sagaId)
-                .build();
+       Reservation r = new Reservation();
+
+       r.userId = userId;
+       r.advisorId = advisorId;
+       r.productId = productId;
+       r.sagaId = sagaId;
+
+        return r;
     }
 
 
