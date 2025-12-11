@@ -29,6 +29,7 @@ public class ReservationController {
                 request.getProductId(),
                 request.getSagaId()
         );
+
         Reservation savedReservation = reservationRepository.save(reservation);
         return ResponseEntity.ok(savedReservation.getReservationId());
     }
@@ -38,7 +39,7 @@ public class ReservationController {
      * 결제 서비스로부터 결제 성공 알림을 받아 예약을 CONFIRMED 상태로 변경합니다.
      * POST /v1/reservations/confirm
      */
-    @PostMapping("/confirm")
+    /*@PostMapping("/confirm")
     public ResponseEntity<String> confirmReservation(@RequestBody PaymentConfirmRequest request) {
         Reservation reservation = reservationRepository.findById(request.getReservationId())
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found: " + request.getReservationId()));
@@ -48,7 +49,7 @@ public class ReservationController {
 
         reservationRepository.save(reservation);
         return ResponseEntity.ok("Reservation confirmed successfully.");
-    }
+    }*/
 
     // --- 3. 예약 취소 ---
     /**

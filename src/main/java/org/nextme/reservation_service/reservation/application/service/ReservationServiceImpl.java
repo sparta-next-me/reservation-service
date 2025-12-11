@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.nextme.reservation_service.reservation.domain.Reservation;
 import org.nextme.reservation_service.reservation.infrastructure.ReservationRepository;
 import org.nextme.reservation_service.reservation.presentation.PaymentConfirmRequest;
+import org.nextme.common.event.PaymentConfirmedEvent;
 import org.nextme.reservation_service.reservation.presentation.ReservationCreateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,5 +73,24 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation getReservationById(UUID reservationId) {
         return reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 ID입니다: " + reservationId));
+    }
+
+    /**
+     * 결제 완료 이벤트 수신 시, 예약을 CONFIRMED 상태로 즉시 생성합니다.
+     */
+    @Override
+    @Transactional // 💡 Consumer가 호출하며, 여기서 트랜잭션이 시작됩니다.
+    public UUID createConfirmedReservation(PaymentConfirmedEvent event) {
+
+        UUID userUuid = UUID.fromString(event.getUserId());
+
+        // 1. Reservation 엔티티 생성 (모든 확정 정보 포함, 상태는 CONFIRMED)
+        Reservation reservation = Reservation.create(userUuid, UUID.randomUUID(), UUID.randomUUID(), "");
+
+
+        // 2. DB에 저장
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        return savedReservation.getReservationId();
     }
 }
