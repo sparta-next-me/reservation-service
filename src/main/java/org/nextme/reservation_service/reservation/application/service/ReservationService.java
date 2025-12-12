@@ -25,10 +25,10 @@ public interface ReservationService {
 
     /**
      * 예약 ID를 통해 예약을 취소 상태(CANCELLED)로 변경하고 환불에 필요한 결제 ID를 반환합니다.
-     * @param reservationId 취소할 예약 ID
+     * @param paymentId 취소할 예약 ID
      * @return 환불 처리에 사용될 Payment ID
      */
-    String cancelReservation(UUID reservationId);
+    void cancelReservation(String paymentKey);
 
     /**
      * 예약 ID로 예약을 조회합니다.
