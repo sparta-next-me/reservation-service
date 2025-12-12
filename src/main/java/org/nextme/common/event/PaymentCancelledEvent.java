@@ -33,7 +33,7 @@ public class PaymentCancelledEvent {
     /**
      * 취소된 금액
      */
-    BigDecimal cancelledAmount;
+    Long cancelledAmount;
 
     /**
      * 결제 취소가 발생한 시점 (UTC)
