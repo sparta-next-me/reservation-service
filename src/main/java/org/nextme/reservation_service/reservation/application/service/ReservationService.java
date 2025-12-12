@@ -2,6 +2,7 @@ package org.nextme.reservation_service.reservation.application.service;
 
 import org.nextme.reservation_service.reservation.domain.Reservation;
 import org.nextme.reservation_service.reservation.presentation.PaymentConfirmRequest;
+import org.nextme.common.event.PaymentConfirmedEvent;
 import org.nextme.reservation_service.reservation.presentation.ReservationCreateRequest;
 
 import java.util.UUID;
@@ -24,10 +25,10 @@ public interface ReservationService {
 
     /**
      * 예약 ID를 통해 예약을 취소 상태(CANCELLED)로 변경하고 환불에 필요한 결제 ID를 반환합니다.
-     * @param reservationId 취소할 예약 ID
+     * @param paymentId 취소할 예약 ID
      * @return 환불 처리에 사용될 Payment ID
      */
-    String cancelReservation(UUID reservationId);
+    void cancelReservation(String paymentKey);
 
     /**
      * 예약 ID로 예약을 조회합니다.
@@ -35,4 +36,11 @@ public interface ReservationService {
      * @return 조회된 예약 엔티티
      */
     Reservation getReservationById(UUID reservationId);
+
+    /**
+     * 결제 완료 이벤트 수신 시, 예약을 CONFIRMED 상태로 즉시 생성합니다.
+     * @param event 결제 확정에 필요한 모든 데이터를 담고 있는 이벤트 DTO
+     * @return 생성된 예약의 ID
+     */
+    UUID createConfirmedReservation(PaymentConfirmedEvent event);
 }

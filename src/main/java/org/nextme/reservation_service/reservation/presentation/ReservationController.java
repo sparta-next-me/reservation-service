@@ -1,6 +1,7 @@
 package org.nextme.reservation_service.reservation.presentation;
 
 import lombok.RequiredArgsConstructor;
+import org.nextme.reservation_service.reservation.application.service.ReservationService;
 import org.nextme.reservation_service.reservation.domain.Reservation;
 import org.nextme.reservation_service.reservation.infrastructure.ReservationRepository;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class ReservationController {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationService reservationService;
 
     // --- 1. 예약 생성 (결제 대기 상태) ---
     /**
@@ -29,6 +31,7 @@ public class ReservationController {
                 request.getProductId(),
                 request.getSagaId()
         );
+
         Reservation savedReservation = reservationRepository.save(reservation);
         return ResponseEntity.ok(savedReservation.getReservationId());
     }
@@ -38,7 +41,7 @@ public class ReservationController {
      * 결제 서비스로부터 결제 성공 알림을 받아 예약을 CONFIRMED 상태로 변경합니다.
      * POST /v1/reservations/confirm
      */
-    @PostMapping("/confirm")
+    /*@PostMapping("/confirm")
     public ResponseEntity<String> confirmReservation(@RequestBody PaymentConfirmRequest request) {
         Reservation reservation = reservationRepository.findById(request.getReservationId())
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found: " + request.getReservationId()));
@@ -48,14 +51,14 @@ public class ReservationController {
 
         reservationRepository.save(reservation);
         return ResponseEntity.ok("Reservation confirmed successfully.");
-    }
+    }*/
 
     // --- 3. 예약 취소 ---
     /**
      * 예약 ID로 예약을 찾아 CANCELLED 상태로 변경합니다. (환불 로직은 별도 처리 필요)
      * POST /v1/reservations/{reservationId}/cancel
      */
-    @PostMapping("/{reservationId}/cancel")
+    /*@PostMapping("/{reservationId}/cancel")
     public ResponseEntity<String> cancelReservation(@PathVariable UUID reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found: " + reservationId));
@@ -66,5 +69,24 @@ public class ReservationController {
         reservationRepository.save(reservation);
         // 취소 후, paymentIdForRefund를 사용하여 환불 서비스에 요청하는 로직이 추가될 수 있습니다.
         return ResponseEntity.ok("Reservation cancelled. Payment ID for refund: " + paymentIdForRefund);
+    }*/
+
+    // =========================================================================
+    // --- 4. 예약 단건 조회 기능 추가 ---
+    // =========================================================================
+
+    /**
+     * 예약 ID로 단건 예약을 조회합니다.
+     * GET /v1/reservations/{reservationId}
+     * * @param reservationId 조회할 예약 ID
+     * @return 조회된 Reservation 엔티티
+     */
+    @GetMapping("/{reservationId}")
+    public ResponseEntity<Reservation> getReservation(@PathVariable UUID reservationId) {
+        // ReservationService의 getReservationById 메서드를 사용하여 조회
+        Reservation reservation = reservationService.getReservationById(reservationId);
+
+        // 200 OK와 함께 Reservation 엔티티 반환
+        return ResponseEntity.ok(reservation);
     }
 }
