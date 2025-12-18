@@ -30,6 +30,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: reservationservice
 
+  data:
+    redis:
+      host: 34.50.7.8
+      port: 6379
+
   flyway:
     enabled: true
     schemas: reservationservice
