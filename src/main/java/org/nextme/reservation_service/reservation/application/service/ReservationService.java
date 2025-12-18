@@ -5,6 +5,9 @@ import org.nextme.reservation_service.reservation.presentation.PaymentConfirmReq
 import org.nextme.common.event.PaymentConfirmedEvent;
 import org.nextme.reservation_service.reservation.presentation.ReservationCreateRequest;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface ReservationService {
@@ -43,4 +46,6 @@ public interface ReservationService {
      * @return 생성된 예약의 ID
      */
     UUID createConfirmedReservation(PaymentConfirmedEvent event);
+
+    List<LocalTime> getOccupiedTimes(UUID productId, LocalDate date);
 }

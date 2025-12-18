@@ -4,9 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.nextme.reservation_service.reservation.application.service.ReservationService;
 import org.nextme.reservation_service.reservation.domain.Reservation;
 import org.nextme.reservation_service.reservation.infrastructure.ReservationRepository;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -88,5 +92,17 @@ public class ReservationController {
 
         // 200 OK와 함께 Reservation 엔티티 반환
         return ResponseEntity.ok(reservation);
+    }
+
+    /**
+     * Product Service의 FeignClient가 호출하는 엔드포인트
+     */
+    @GetMapping("/booked-times")
+    public List<LocalTime> getBookedTimes(
+            @RequestParam UUID productId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        // 특정 상품과 날짜에 대해 이미 점유된(확정+임시) 시간 목록 반환
+        return reservationService.getOccupiedTimes(productId, date);
     }
 }
