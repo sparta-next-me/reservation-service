@@ -10,7 +10,11 @@ import org.nextme.reservation_service.reservation.presentation.ReservationCreate
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -104,5 +108,23 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return savedReservation.getReservationId();
+    }
+
+    @Override
+    public List<LocalTime> getOccupiedTimes(UUID productId, LocalDate date) {
+
+        // (상태가 'CANCELLED'인 것은 제외하고 'CONFIRMED', 'PENDING'인 것만 조회)
+        List<Reservation> reservations = reservationRepository.findByProductIdAndReservationDateAndStatusIn(
+                productId,
+                date,
+                List.of("CONFIRMED", "PENDING_PAYMENT")
+        );
+
+        // 2. 예약 객체에서 시작 시간(startTime)만 추출하여 리스트로 반환
+        return reservations.stream()
+                .map(reservation -> reservation.getStartTime()
+                        .withSecond(0)  // 🌟 초를 0으로 강제 고정
+                        .withNano(0))    // 🌟 나노초를 0으로 강제 고정
+                .collect(Collectors.toList());
     }
 }
