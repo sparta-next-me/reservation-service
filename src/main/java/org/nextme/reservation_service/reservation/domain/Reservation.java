@@ -1,10 +1,7 @@
 package org.nextme.reservation_service.reservation.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.nextme.common.jpa.BaseEntity;
 import org.nextme.common.jpa.JpaAudit;
 import org.nextme.reservation_service.reservation.domain.ReservationStatus;
@@ -14,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
+@ToString
 @Entity
 @Table(name = "p_advisor_reservation")
 @Getter
@@ -58,14 +56,16 @@ public class Reservation extends BaseEntity {
      * 예약을 생성하고 초기 상태(PENDING_PAYMENT)를 설정합니다.
      * 결제 및 확정 관련 필드(paymentId, roomId)는 제외합니다.
      */
-    public static Reservation create(UUID userId, UUID advisorId, UUID productId, String paymentKey) {
+    public static Reservation create(UUID userId, UUID advisorId, UUID productId, String paymentKey, LocalDateTime dateTime) {
        Reservation r = new Reservation();
 
        r.userId = userId;
        r.advisorId = advisorId;
        r.productId = productId;
        r.paymentKey = paymentKey;
-
+        r.reservationDate = dateTime.toLocalDate();
+        r.startTime = dateTime.toLocalTime();
+        r.endTime = r.startTime.plusMinutes(20L);
         return r;
     }
 

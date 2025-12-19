@@ -1,6 +1,7 @@
 package org.nextme.reservation_service.reservation.presentation;
 
 import lombok.RequiredArgsConstructor;
+import org.nextme.common.event.PaymentConfirmedEvent;
 import org.nextme.reservation_service.reservation.application.service.ReservationService;
 import org.nextme.reservation_service.reservation.domain.Reservation;
 import org.nextme.reservation_service.reservation.infrastructure.ReservationRepository;
@@ -21,24 +22,25 @@ public class ReservationController {
     private final ReservationRepository reservationRepository;
     private final ReservationService reservationService;
 
-    // --- 1. 예약 생성 (결제 대기 상태) ---
-    /**
-     * 새로운 예약을 생성하고 PENDING_PAYMENT 상태로 저장합니다.
-     * 이후 결제 서비스로 전달되어 결제가 진행됩니다.
-     * POST /v1/reservations
-     */
-    @PostMapping
-    public ResponseEntity<UUID> createReservation(@RequestBody ReservationCreateRequest request) {
-        Reservation reservation = Reservation.create(
-                request.getUserId(),
-                request.getAdvisorId(),
-                request.getProductId(),
-                request.getSagaId()
-        );
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ResponseEntity.ok(savedReservation.getReservationId());
-    }
+//    // --- 1. 예약 생성 (결제 대기 상태) ---
+//    /**
+//     * 새로운 예약을 생성하고 PENDING_PAYMENT 상태로 저장합니다.
+//     * 이후 결제 서비스로 전달되어 결제가 진행됩니다.
+//     * POST /v1/reservations
+//     */
+//    @PostMapping
+//    public ResponseEntity<UUID> createReservation(@RequestBody ReservationCreateRequest request) {
+//        Reservation reservation = Reservation.create(
+//                request.getUserId(),
+//                request.getAdvisorId(),
+//                request.getProductId(),
+//                request.getSagaId()
+//        );
+//
+//        Reservation savedReservation = reservationRepository.save(reservation);
+//
+//        return ResponseEntity.ok(savedReservation.getReservationId());
+//    }
 
     // --- 2. 예약 확정 (결제 성공 후) ---
     /**

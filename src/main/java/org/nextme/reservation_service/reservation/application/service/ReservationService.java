@@ -12,12 +12,12 @@ import java.util.UUID;
 
 public interface ReservationService {
 
-    /**
-     * 예약을 생성하고 초기 상태(PENDING_PAYMENT)로 저장합니다.
-     * @param request 예약 생성에 필요한 데이터 DTO
-     * @return 생성된 예약의 ID
-     */
-    UUID createReservation(ReservationCreateRequest request);
+//    /**
+//     * 예약을 생성하고 초기 상태(PENDING_PAYMENT)로 저장합니다.
+//     * @param request 예약 생성에 필요한 데이터 DTO
+//     * @return 생성된 예약의 ID
+//     */
+//    UUID createReservation(ReservationCreateRequest request);
 
     /**
      * 결제 성공 알림을 받아 예약을 확정 상태(CONFIRMED)로 변경합니다.

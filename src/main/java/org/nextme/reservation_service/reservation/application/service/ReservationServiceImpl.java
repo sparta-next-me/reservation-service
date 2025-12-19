@@ -2,6 +2,7 @@ package org.nextme.reservation_service.reservation.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.nextme.common.event.ChatRoom;
 import org.nextme.reservation_service.reservation.domain.Reservation;
 import org.nextme.reservation_service.reservation.infrastructure.ReservationRepository;
 import org.nextme.reservation_service.reservation.presentation.PaymentConfirmRequest;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
@@ -23,24 +25,25 @@ import java.util.stream.Collectors;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
-
+    private final ChatRoomEventProducer chatRoomEventProducer;
+    private final ChatRoomCancelEventProducer chatRoomCancelEventProducer;
     /**
      * 예약 생성 (쓰기 작업이므로 @Transactional 필요)
      */
-    @Override
-    @Transactional
-    public UUID createReservation(ReservationCreateRequest request) {
-        // Reservation.create() 정적 팩토리 메소드를 사용하여 엔티티 생성
-        Reservation reservation = Reservation.create(
-                request.getUserId(),
-                request.getAdvisorId(),
-                request.getProductId(),
-                request.getSagaId()
-        );
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return savedReservation.getReservationId();
-    }
+//    @Override
+//    @Transactional
+//    public UUID createReservation(ReservationCreateRequest request) {
+//        // Reservation.create() 정적 팩토리 메소드를 사용하여 엔티티 생성
+//        Reservation reservation = Reservation.create(
+//                request.getUserId(),
+//                request.getAdvisorId(),
+//                request.getProductId(),
+//                request.getSagaId()
+//        );
+//
+//        Reservation savedReservation = reservationRepository.save(reservation);
+//        return savedReservation.getReservationId();
+//    }
 
     /**
      * 예약 확정 (쓰기 작업이므로 @Transactional 필요)
@@ -52,6 +55,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 엔티티 내부의 비즈니스 로직(상태 변경 및 필드 업데이트) 호출
         reservation.confirmReservation(request.getPaymentId(), request.getRoomId());
+
 
         // save를 명시적으로 호출하지 않아도 @Transactional에 의해 변경 사항이 DB에 반영됩니다 (Dirty Checking).
         return reservation;
@@ -79,6 +83,12 @@ public class ReservationServiceImpl implements ReservationService {
 
         // Dirty Checking을 통해 상태 변경 사항이 DB에 반영됩니다.
         log.info("예약 ID {} 취소가 완료되었습니다.", reservationId);
+
+
+        chatRoomCancelEventProducer.sendChatRoomCancelEvent(
+                reservation.getReservationId()
+        );
+
         //return paymentId; // 컨트롤러 또는 외부 호출자에게 환불 처리를 요청하도록 Payment ID 반환
     }
 
@@ -101,11 +111,23 @@ public class ReservationServiceImpl implements ReservationService {
         UUID userUuid = UUID.fromString(event.getUserId());
 
         // 1. Reservation 엔티티 생성 (모든 확정 정보 포함, 상태는 CONFIRMED)
-        Reservation reservation = Reservation.create(userUuid, UUID.randomUUID(), UUID.randomUUID(), event.getPaymentId());
+        Reservation reservation = Reservation.create(userUuid, UUID.randomUUID(), UUID.randomUUID(), event.getPaymentId(), event.getDateTime());
 
 
         // 2. DB에 저장
         Reservation savedReservation = reservationRepository.save(reservation);
+
+        log.info("Reservation 확인: {}", savedReservation);
+
+        log.info("Confirming reservation message produce start: {}", reservation.getReservationId());
+        chatRoomEventProducer.sendChatRoomCreatedEvent(
+                reservation.getAdvisorId(),
+                reservation.getUserId(),
+                LocalDateTime.of(reservation.getReservationDate(), reservation.getStartTime()),
+                LocalDateTime.of(reservation.getReservationDate(), reservation.getEndTime()),
+                reservation.getReservationId()
+        );
+        log.info("Confirming reservation message produce end: {}", reservation.getReservationId());
 
         return savedReservation.getReservationId();
     }
