@@ -13,13 +13,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
 
     Optional<Reservation> findByPaymentKey(String paymentKey);
 
-    /**
-     * Saga ID (분산 트랜잭션 ID)를 기준으로 예약을 조회합니다.
-     * Saga 패턴을 사용하는 경우, 분산 트랜잭션의 상태 확인을 위해 사용될 수 있습니다.
-     * @param sagaId Saga 고유 ID
-     * @return 해당 sagaId를 가진 Reservation 객체
-     */
+    Optional<Reservation> findByUserId(UUID userId);
+    
     Optional<Reservation> findBySagaId(String sagaId);
+
+    List<Reservation> findAllByUserId(UUID userId);
+
+    List<Reservation> findAllByAdvisorId(UUID advisorId);
 
     List<Reservation> findByProductIdAndReservationDateAndStatusIn(
             UUID productId,

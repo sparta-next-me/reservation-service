@@ -96,9 +96,24 @@ public class ReservationServiceImpl implements ReservationService {
      * 예약 조회
      */
     @Override
-    public Reservation getReservationById(UUID userId) {
-        return reservationRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 ID입니다: " + userId));
+    public Reservation getReservationById(UUID reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 ID입니다: " + reservationId));
+    }
+
+    @Override
+    public List<Reservation> findAllByUserId(UUID userId) {
+        return reservationRepository.findAllByUserId(userId);
+    }
+
+    @Override
+    public List<Reservation> findAllByAdvisorId(UUID advisorId) {
+        return reservationRepository.findAllByAdvisorId(advisorId);
+    }
+
+    @Override
+    public List<Reservation> findAll() {
+        return reservationRepository.findAll();
     }
 
     /**
