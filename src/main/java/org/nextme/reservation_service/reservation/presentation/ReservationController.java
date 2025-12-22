@@ -87,13 +87,41 @@ public class ReservationController {
      * * @param reservationId 조회할 예약 ID
      * @return 조회된 Reservation 엔티티
      */
-    @GetMapping("/{userId}")
+    @GetMapping("/{reservationId}")
     public ResponseEntity<Reservation> getReservation(@PathVariable UUID reservationId) {
         // ReservationService의 getReservationById 메서드를 사용하여 조회
         Reservation reservation = reservationService.getReservationById(reservationId);
 
         // 200 OK와 함께 Reservation 엔티티 반환
         return ResponseEntity.ok(reservation);
+    }
+
+    @GetMapping("/users/{userId}")
+    public List<Reservation> findAllByUserId(@PathVariable UUID userId) {
+        // ReservationService의 getReservationById 메서드를 사용하여 조회
+        List<Reservation> reservations = reservationService.findAllByUserId(userId);
+
+        // 200 OK와 함께 Reservation 엔티티 반환
+        return ResponseEntity.ok(reservations).getBody();
+    }
+
+    @GetMapping("/advisors/{advisorId}")
+    public List<Reservation> findAllByAdvisorId(@PathVariable UUID advisorId) {
+        // ReservationService의 getReservationById 메서드를 사용하여 조회
+        List<Reservation> reservations = reservationService.findAllByAdvisorId(advisorId);
+
+        // 200 OK와 함께 Reservation 엔티티 반환
+        return ResponseEntity.ok(reservations).getBody();
+    }
+
+    @GetMapping("/")
+    public List<Reservation> findAll() {
+        // 모든 예약 내역 조회
+        List<Reservation> reservations = reservationService.findAll();
+
+        // 데이터가 없을 경우 204 No Content를 보낼지,
+        // 빈 리스트와 200 OK를 보낼지는 팀 컨벤션에 따라 다릅니다. (여기서는 200 OK)
+        return ResponseEntity.ok(reservations).getBody();
     }
 
     /**

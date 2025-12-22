@@ -38,8 +38,13 @@ public interface ReservationService {
      * @param reservationId 조회할 예약 ID
      * @return 조회된 예약 엔티티
      */
-    //Reservation getReservationById(UUID reservationId);
-    Reservation getReservationById(UUID userId);
+    Reservation getReservationById(UUID reservationId);
+
+    List<Reservation> findAllByUserId(UUID userId);
+
+    List<Reservation> findAllByAdvisorId(UUID advisorId);
+
+    List<Reservation> findAll();
 
     /**
      * 결제 완료 이벤트 수신 시, 예약을 CONFIRMED 상태로 즉시 생성합니다.
