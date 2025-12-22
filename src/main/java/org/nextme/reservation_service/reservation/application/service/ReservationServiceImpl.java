@@ -111,7 +111,7 @@ public class ReservationServiceImpl implements ReservationService {
         UUID userUuid = UUID.fromString(event.getUserId());
 
         // 1. Reservation 엔티티 생성 (모든 확정 정보 포함, 상태는 CONFIRMED)
-        Reservation reservation = Reservation.create(userUuid, UUID.randomUUID(), UUID.randomUUID(), event.getPaymentId(), event.getDateTime());
+        Reservation reservation = Reservation.create(userUuid, event.getAdvisorId(), event.getProductId(), event.getPaymentId(), event.getDateTime(), event.getEndTime());
 
 
         // 2. DB에 저장
