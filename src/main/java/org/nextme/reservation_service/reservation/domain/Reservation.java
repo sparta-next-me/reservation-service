@@ -56,7 +56,7 @@ public class Reservation extends BaseEntity {
      * 예약을 생성하고 초기 상태(PENDING_PAYMENT)를 설정합니다.
      * 결제 및 확정 관련 필드(paymentId, roomId)는 제외합니다.
      */
-    public static Reservation create(UUID userId, UUID advisorId, UUID productId, String paymentKey, LocalDateTime dateTime) {
+    public static Reservation create(UUID userId, UUID advisorId, UUID productId, String paymentKey, LocalDateTime dateTime, LocalDateTime endTime) {
        Reservation r = new Reservation();
 
        r.userId = userId;
@@ -65,7 +65,7 @@ public class Reservation extends BaseEntity {
        r.paymentKey = paymentKey;
         r.reservationDate = dateTime.toLocalDate();
         r.startTime = dateTime.toLocalTime();
-        r.endTime = r.startTime.plusMinutes(20L);
+        r.endTime = endTime.toLocalTime();
         return r;
     }
 
