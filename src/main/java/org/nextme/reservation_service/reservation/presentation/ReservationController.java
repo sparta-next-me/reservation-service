@@ -88,9 +88,9 @@ public class ReservationController {
      * @return 조회된 Reservation 엔티티
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<Reservation> getReservation(@PathVariable UUID reservationId) {
+    public ResponseEntity<Reservation> getReservation(@PathVariable UUID userId) {
         // ReservationService의 getReservationById 메서드를 사용하여 조회
-        Reservation reservation = reservationService.getReservationById(reservationId);
+        Reservation reservation = reservationService.getReservationById(userId);
 
         // 200 OK와 함께 Reservation 엔티티 반환
         return ResponseEntity.ok(reservation);
